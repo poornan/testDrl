@@ -3,88 +3,126 @@ package main.domain;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by eananthaneshan on 4/11/17.
  */
 public class DocumentRule extends Rule {
 
-    public DocumentRule(DocumentConditions conditions, DocumentActions actions) {
+    public DocumentRule(List<Condition> conditions, List<Action> actions) {
         this.conditions = conditions;
         this.actions = actions;
     }
 
     public DocumentRule() {
-    }
 
-    public static DocumentConditions createConditions(String documentType, BigDecimal limit) {
-        return new DocumentConditions(documentType, limit);
-    }
-
-    public static DocumentActions createActions(String ruleId, String roleId) {
-        return new DocumentActions(ruleId, roleId);
     }
 
     public DocumentRule setConditions(String documentType, BigDecimal limit) {
-        conditions = new DocumentConditions(documentType, limit);
+        this.conditions = new ArrayList<>();
+        conditions.add(new DocumentType(documentType));
+        conditions.add(new Limit(limit));
         return this;
     }
 
     public DocumentRule setActions(String ruleId, String roleId) {
-        actions = new DocumentActions(ruleId, roleId);
+        this.actions = new ArrayList<>();
+        actions.add(new RuleId(ruleId));
+        actions.add(new RoleId(roleId));
         return this;
     }
 
-    static class DocumentConditions implements Condition {
+    class DocumentType implements Condition {
+        String documentType;
+
+        DocumentType(String documentType) {
+            this.documentType = documentType;
+        }
+
+        @Override
+        public String toString() {
+            return documentType.toString();
+        }
+
+        @Override
+        public Type getType() {
+            return documentType.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return documentType;
+        }
+    }
+
+    class Limit implements Condition {
         String documentType;
         BigDecimal limit;
 
-        DocumentConditions(String documentType, BigDecimal limit) {
-            this.documentType = documentType;
+        Limit(BigDecimal limit) {
             this.limit = limit;
         }
 
         @Override
         public String toString() {
-            return String.format("['documentType'='%s','limit'='%s']", documentType, limit);
+            return limit.toString();
         }
 
         @Override
-        public List<Map<Object, Type>> getConditionElements() {
-            List<Map<Object, Type>> a = new ArrayList<>();
-            Map<Object,Type> b = new HashMap<>();
-            b.put(documentType,String.class);
-            b.put(limit,BigDecimal.class);
-            a.add(b);
-            return a;
+        public Type getType() {
+            return limit.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return limit;
         }
     }
 
-    static class DocumentActions implements Action {
-        String ruleId;
+    class RoleId implements Action {
         String roleId;
 
-        DocumentActions(String ruleId, String roleId) {
-            this.ruleId = ruleId;
-            this.roleId = roleId;
+        RoleId(String ruleId) {
+            this.roleId = ruleId;
         }
 
         @Override
         public String toString() {
-            return String.format("['ruleId'='%s','roleId'='%s']", ruleId, roleId);
+            return roleId;
         }
 
         @Override
-        public List<Map<Object, Type>> getActionElements() {
-            List<Map<Object, Type>> a = new ArrayList<>();
-            Map<Object,Type> b = new HashMap<>();
-            b.put(ruleId,String.class);
-            b.put(roleId,String.class);
-            a.add(b);
-            return a;
+        public Type getType() {
+            return roleId.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return roleId;
+        }
+    }
+
+    class RuleId implements Action {
+        String ruleId;
+
+        RuleId(String ruleId) {
+            this.ruleId = ruleId;
+        }
+
+        @Override
+        public String toString() {
+            return ruleId;
+        }
+
+        @Override
+        public Type getType() {
+            return ruleId.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return ruleId;
         }
     }
 }

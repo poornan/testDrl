@@ -3,16 +3,14 @@ package main.domain;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by eananthaneshan on 4/11/17.
  */
 public class FundRule extends Rule {
 
-    public FundRule(FundConditions conditions, FundActions actions) {
+    public FundRule(List<Condition> conditions, List<Action> actions) {
         this.conditions = conditions;
         this.actions = actions;
     }
@@ -21,87 +19,110 @@ public class FundRule extends Rule {
         super();
     }
 
-    public static FundConditions createConditions(String chartOfAccount, BigDecimal limit) {
-        return new FundConditions(chartOfAccount, limit);
-    }
-
-    public static FundActions createActions(String nric, String roleId) {
-        return new FundActions(nric, roleId);
-    }
-
-    public FundRule setConditions(String chartOfAccount, BigDecimal limit) {
-        conditions = new FundConditions(chartOfAccount, limit);
+    public FundRule setConditions(String chartOfAccounts, BigDecimal limit){
+        this.conditions = new ArrayList<>();
+        conditions.add(new COA(chartOfAccounts));
+        conditions.add(new Limit(limit));
         return this;
     }
 
-    public FundRule setActions(String nric, String roleId) {
-        actions = new FundActions(nric, roleId);
+    public FundRule setActions(String nric, String roleId){
+        this.actions = new ArrayList<>();
+        actions.add(new NRIC(nric));
+        actions.add(new RoleId(roleId));
         return this;
     }
 
-    static public class FundConditions implements Condition {
+    public class COA implements Condition {
         String chartOfAccounts;
+
+        public COA(String chartOfAccounts) {
+            this.chartOfAccounts = chartOfAccounts;
+
+        }
+
+        @Override
+        public String toString() {
+            return chartOfAccounts;
+        }
+
+        @Override
+        public Type getType() {
+            return chartOfAccounts.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return chartOfAccounts;
+        }
+    }
+
+    public class Limit implements Condition {
         BigDecimal limit;
 
-        public FundConditions(String chartOfAccounts, BigDecimal limit) {
-            this.chartOfAccounts = chartOfAccounts;
+        public Limit(BigDecimal limit) {
             this.limit = limit;
         }
 
         @Override
         public String toString() {
-            return String.format("['COA'='%s','limit'='%s']", chartOfAccounts, limit);
-        }
-
-        public String getChartOfAccounts() {
-            return chartOfAccounts;
-        }
-
-        public BigDecimal getLimit() {
-            return limit;
+            return limit.toString();
         }
 
         @Override
-        public List<Map<Object, Type>> getConditionElements() {
-            List<Map<Object, Type>> a = new ArrayList<>();
-            Map<Object,Type> b = new HashMap<>();
-            b.put(chartOfAccounts,String.class);
-            b.put(limit,BigDecimal.class);
-            a.add(b);
-            return a;
+        public Type getType() {
+            return limit.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return limit;
         }
     }
 
-    static public class FundActions implements Action {
+    public class NRIC implements Action {
         String nric;
+
+        public NRIC(String nric) {
+            this.nric = nric;
+        }
+
+        @Override
+        public String toString() {
+            return nric;
+        }
+
+        @Override
+        public Type getType() {
+            return nric.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return nric;
+        }
+    }
+
+    public class RoleId implements Action {
         String roleId;
 
-        public FundActions(String nric, String roleId) {
-            this.nric = nric;
+        public RoleId(String roleId) {
             this.roleId = roleId;
         }
 
         @Override
         public String toString() {
-            return String.format("['NRIC'='%s','Role Id'='%s']", nric, roleId);
-        }
-
-        public String getNric() {
-            return nric;
-        }
-
-        public String getRoleId() {
             return roleId;
         }
 
         @Override
-        public List<Map<Object, Type>> getActionElements() {
-            List<Map<Object, Type>> a = new ArrayList<>();
-            Map<Object,Type> b = new HashMap<>();
-            b.put(nric,String.class);
-            b.put(roleId,String.class);
-            a.add(b);
-            return a;
+        public Type getType() {
+            return roleId.getClass();
+        }
+
+        @Override
+        public Object getValue() {
+            return roleId;
         }
     }
 }

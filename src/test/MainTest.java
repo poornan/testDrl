@@ -22,7 +22,7 @@ public class MainTest {
                 .setActions("G3172", "id");
         AgencyRules agencyRules1 = new AgencyRulesImpl(new MinDep("TrS_231"));
         agencyRules1.addRule(fundRule);
-        System.out.println(agencyRules1.getRules().get(0).getActions().getActionElements());
+        System.out.println(agencyRules1.getRules().get(0).getActions().get(0).getValue());
 
     }
 
